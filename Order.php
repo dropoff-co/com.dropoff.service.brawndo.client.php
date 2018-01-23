@@ -24,6 +24,35 @@ class Order
         $this->tip = new \Dropoff\Tip($utils);
     }
 
+    public function properties($company_id = NULL)
+    {
+        $request = NULL;
+        if (!is_null($company_id)) {
+            $query = array(
+                'company_id' => company_id
+            );
+            $request = $this->utils->createSignedRequest('/order/properties', 'order', \HTTP_Request2::METHOD_GET, $query);
+        } else {
+            $request = $this->utils->createSignedRequest('/order/properties', 'order', \HTTP_Request2::METHOD_GET);
+        }
+        $request->setHeader('Content-type: application/json; charset=utf-8');
+        return $this->utils->sendRequest($request);
+    }
+
+    public function signature($order_id, $company_id = NULL)
+    {
+        $request = NULL;
+        if (!is_null($company_id)) {
+            $query = array(
+                'company_id' => $company_id
+            );
+            $request = $this->utils->createSignedRequest('/order/signature/' . $order_id, 'order', \HTTP_Request2::METHOD_GET, $query);
+        } else {
+            $request = $this->utils->createSignedRequest('/order/signature/' . $order_id, 'order', \HTTP_Request2::METHOD_GET);
+        }
+        return $this->utils->sendRequest($request);
+    }
+
     public function create($order_data, $company_id = NULL)
     {
         $request = NULL;
@@ -87,9 +116,18 @@ class Order
         return $this->utils->sendRequest($request);
     }
 
-    public function simulate($market)
+    public function simulate($market, $company_id = NULL)
     {
-        $request = $this->utils->createSignedRequest('/order/simulate/' . $market, 'order', \HTTP_Request2::METHOD_GET, $query);
+        $request = NULL;
+        if (!is_null($company_id)) {
+            $query = array(
+                'company_id' => $company_id
+            );
+            $request = $this->utils->createSignedRequest('/order/simulate/' . $market, 'order', \HTTP_Request2::METHOD_GET, $query);
+        } else {
+            $request = $this->utils->createSignedRequest('/order/simulate/' . $market, 'order', \HTTP_Request2::METHOD_GET);
+        }
+
         return $this->utils->sendRequest($request);
     }
 }
