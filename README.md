@@ -1,19 +1,28 @@
+<img src="Dropoff-Logo-Cropped.png" alt="Drawing" style="width: 200px;"/>
 
 
 # Brawndo PHP Client
 
 This is the 3rd party dropoff php client for creating and viewing orders and adding tips.
 
+* **For Javascript documentation go [HERE](https://github.com/dropoff-co/com.dropoff.service.brawndo.client.js "Javascript")**
+* **For Ruby documentation go [HERE](https://github.com/dropoff-co/com.dropoff.service.brawndo.client.ruby "Ruby")**
+* **For GO documentation go [HERE](https://github.com/dropoff-co/com.dropoff.service.brawndo.client.go "GO")**
+* **For C# documentation go [HERE](https://github.com/dropoff-co/com.dropoff.service.brawndo.client.dotnetcore "C#")**
+
+
 # Table of Contents
   + [Client Info](#client)
     - [Configuration](#configuration)
     - [Getting Your Account Info](#client_info)
     - [Enterprise Managed Clients](#managed_clients)
+    - [Order Properties](#order_properties)
     - [Getting Pricing Estimates](#estimates)
     - [Placing an Order](#placing)
     - [Cancelling an Order](#cancel)
     - [Getting a Specific Order](#specific)
     - [Getting a Page of Order](#page)
+  + [Signature Image URL](#signature)
   + [Tips](#tips)  
     - [Creating](#tip_create)
     - [Deleting](#tip_delete)
@@ -236,6 +245,95 @@ All you have to do is specify the id of the client that you want to act on.  So 
 
 The following api documentation will show how to do this.
 
+### Order Properties <a id="order_properties"></a>
+
+Depending on your client, you may have the option to add properties to your order.  In order to determine whether or not your client has properties, you can make a call the **AvailableProperties** method.  It will return all properties that can be applied to your orders during creation.
+
+    $company_id = NULL //optional
+    $result = $brawndo->order->properties($company_id);
+
+	
+If you include a **company_id** you will retrieve that company's properties only if your account credentials are managing that account.
+
+An example of a successful response will look like this:
+
+	array(4) {
+	  ["data"]=>
+		  array(3) {
+		    [0]=>
+		    array(6) {
+		      ["id"]=>
+		      int(1)
+		      ["label"]=>
+		      string(13) "Leave at Door"
+		      ["description"]=>
+		      string(66) "If recipient is not at home or at office, leave order at the door."
+		      ["price_adjustment"]=>
+		      int(0)
+		      ["conflicts"]=>
+		      array(1) {
+		        [0]=>
+		        int(2)
+		      }
+		      ["requires"]=>
+		      array(0) {
+		      }
+		    }
+		    [1]=>
+		    array(6) {
+		      ["id"]=>
+		      int(2)
+		      ["label"]=>
+		      string(18) "Signature Required"
+		      ["description"]=>
+		      string(37) "Signature is required for this order."
+		      ["price_adjustment"]=>
+		      int(0)
+		      ["conflicts"]=>
+		      array(1) {
+		        [0]=>
+		        int(1)
+		      }
+		      ["requires"]=>
+		      array(0) {
+		      }
+		    }
+		    [2]=>
+		    array(6) {
+		      ["id"]=>
+		      int(3)
+		      ["label"]=>
+		      string(12) "Legal Filing"
+		      ["description"]=>
+		      string(85) "This order is a legal filing at the court house. Please read order remarks carefully."
+		      ["price_adjustment"]=>
+		      int(5.50)
+		      ["conflicts"]=>
+		      array(0) {
+		      }
+		      ["requires"]=>
+		      array(1) {
+		        [0]=>
+		        int(2)
+		      }
+		      }
+		    }
+		  }
+	  ["count"]=>
+	  int(3)
+	  ["total"]=>
+	  int(3)
+	  ["success"]=>
+	  bool(true)
+	}
+
+- **id** - the id of the property, you will use this value if you want to add the property to an order you are creating
+- **label** - a simple description of the property.
+- **description** - more details about the property.
+- **price_adjustment** - a number that describes any additional charges that the property will require.
+- **conflicts** - an array of other property ids that cannot be included in an order when this property is set.  In the above response you cannot set both "Leave at Door" and "Signature Required".
+- **requires** - an array of other property ids that must be included in an order when this property is set.  In the above response, when "Legal Filing" is set on an order, then "Signature Required" should be set as well.
+
 ### Getting Pricing Estimates <a id="estimates"></a>
 
 Before you place an order you will first want to estimate the distance, eta, and cost for the delivery.  The client provides a **getEstimate** function for this operation.
@@ -406,13 +504,24 @@ The details contain attributes about the order
 * **type** - the order window.  Can be asap, two_hr, or four_hr depending on the ready_date. Required.
 * **reference_name** - a field for your internal referencing. Optional.
 * **reference_code** - a field for your internal referencing. Optional.
+
+
+#### Order properties data.
+
+The properties section is an array of [property ids](#order_properties) to add to the order
+
+	$properties = array( 2, 3 );
+
+This is an optional piece of data.
+
 ---
 Once this data is created, you can create the order.
 
 	$new_order = array(
 	    'origin' => $origin,
 	    'destination' => $destination,
-	    'details' => $details
+	    'details' => $details,
+	    'properties' => $properties
 	);
 
 	$result = $brawndo->order->create($new_order);
@@ -423,6 +532,7 @@ Note that if you want to create this order on behalf of a managed client as an e
 	    'origin' => $origin,
 	    'destination' => $destination,
 	    'details' => $details,
+	    'properties' => $properties,
 	    'company_id' => $company_id
 	);
 
@@ -597,6 +707,48 @@ Example response
 	      ["lat"]=>
 	      float(30.263706)
 	    }
+	    ["properties"]=>
+		  array(2) {
+		    [0]=>
+		    array(6) {
+		      ["id"]=>
+		      int(2)
+		      ["label"]=>
+		      string(18) "Signature Required"
+		      ["description"]=>
+		      string(37) "Signature is required for this order."
+		      ["price_adjustment"]=>
+		      int(0)
+		      ["conflicts"]=>
+		      array(1) {
+		        [0]=>
+		        int(1)
+		      }
+		      ["requires"]=>
+		      array(0) {
+		      }
+		    }
+		    [1]=>
+		    array(6) {
+		      ["id"]=>
+		      int(3)
+		      ["label"]=>
+		      string(12) "Legal Filing"
+		      ["description"]=>
+		      string(85) "This order is a legal filing at the court house. Please read order remarks carefully."
+		      ["price_adjustment"]=>
+		      int(5.50)
+		      ["conflicts"]=>
+		      array(0) {
+		      }
+		      ["requires"]=>
+		      array(1) {
+		        [0]=>
+		        int(2)
+		      }
+		      }
+		    }
+		  }
 	  }
 	  ["success"]=>
 	  bool(true)
@@ -647,6 +799,23 @@ Example response
 	}
 
 Use **last_key** to get the subsequent page of orders.
+
+## Signature Image URL<a id="signature"></a>
+
+Some orders will contain signatures.  If you want to get a url to an image of the signature you can call the **signature** function.  Note that the signature may not always exist, for example when the delivery was left at the door of the destination.
+
+	$result = $brawndo->order->signature("zzzz-zzzz-zzz");
+
+Example response
+
+	array(2) {
+		["success"]=>
+  		bool(true)
+  		["url"]=>
+  		string(234) "https://s3.amazonaws.com/..."
+	}
+
+**The signature url is configured with an expiration time of 5 minutes after the request for the resource was made**		
 
 ## Tips <a id="tips"></a>
 

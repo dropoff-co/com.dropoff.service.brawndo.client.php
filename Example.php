@@ -15,6 +15,9 @@ $brawndo = new \Dropoff\Brawndo($public_key, $secret_key, 'http://localhost:9094
 $result = $brawndo->info();
 var_dump($result);
 
+$result = $brawndo->order->properties();
+var_dump($result);
+
 //$result = $brawndo->estimate('800 Brazos St, Austin, TX 78701', '2517 Thornton Rd, Austin, TX 78704', date('P'), time());
 //$result = $brawndo->order->read('c969c2a46eb5bc7d007ddc0e10187116');
 //$result = $brawndo->order->readPage();
