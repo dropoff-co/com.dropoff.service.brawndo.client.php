@@ -116,16 +116,25 @@ class Order
         return $this->utils->sendRequest($request);
     }
 
-    public function simulate($market, $company_id = NULL)
+    public function simulate($market = NULL, $order_id = NULL, $company_id = NULL)
     {
         $request = NULL;
         if (!is_null($company_id)) {
             $query = array(
                 'company_id' => $company_id
             );
-            $request = $this->utils->createSignedRequest('/order/simulate/' . $market, 'order', \HTTP_Request2::METHOD_GET, $query);
+            if (!is_null($market)) {
+                $request = $this->utils->createSignedRequest('/order/simulate/' . $market, 'order', \HTTP_Request2::METHOD_GET, $query);
+            } else if (!is_null($order_id)) {
+                $request = $this->utils->createSignedRequest('/order/simulate/order/' . $order_id, 'order', \HTTP_Request2::METHOD_GET, $query);
+            }
+
         } else {
-            $request = $this->utils->createSignedRequest('/order/simulate/' . $market, 'order', \HTTP_Request2::METHOD_GET);
+            if (!is_null($market)) {
+                $request = $this->utils->createSignedRequest('/order/simulate/' . $market, 'order', \HTTP_Request2::METHOD_GET);
+            } else if (!is_null($order_id)) {
+                $request = $this->utils->createSignedRequest('/order/simulate/order/' . $order_id, 'order', \HTTP_Request2::METHOD_GET);
+            }
         }
 
         return $this->utils->sendRequest($request);
