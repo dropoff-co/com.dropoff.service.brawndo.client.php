@@ -139,4 +139,19 @@ class Order
 
         return $this->utils->sendRequest($request);
     }
+
+    public function items($company_id = NULL)
+    {
+        $request = NULL;
+        if (!is_null($company_id)) {
+            $query = array(
+                'company_id' => company_id
+            );
+            $request = $this->utils->createSignedRequest('/order/items', 'order', \HTTP_Request2::METHOD_GET, $query);
+        } else {
+            $request = $this->utils->createSignedRequest('/order/items', 'order', \HTTP_Request2::METHOD_GET);
+        }
+        $request->setHeader('Content-type: application/json; charset=utf-8');
+        return $this->utils->sendRequest($request);
+    }
 }
