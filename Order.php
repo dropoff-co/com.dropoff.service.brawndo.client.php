@@ -17,6 +17,27 @@ class Order
 {
     protected $utils;
     public $tip;
+    public $temperatures = array(
+        'NA' =>  0,
+        'AMBIENT' => 100,
+        'REFRIGERATED' => 200,
+        'FROZEN' => 300
+    );
+
+    public $containers = array(
+        'NA' => 0,
+        'BAG' => 100,
+        'BOX' => 200,
+        'TRAY' => 300,
+        'PALLET' => 400,
+        'BARREL' => 500,
+        'BASKET' => 600,
+        'BUCKET' => 700,
+        'CARTON' => 800,
+        'CASE' => 900,
+        'COOLER' => 1000,
+        'CRATE' => 1100
+    );
 
     function __construct($utils)
     {

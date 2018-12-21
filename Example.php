@@ -79,10 +79,10 @@ $items = array(
     'width' => 1.2,
     'depth' => 2.3,
     'unit' => 'ft',
-    'container' => 'BOX',
+    'container' => $brawndo->order->containers['BOX'],
     'description' => 'Box of t-shirts php',
     'price' => 59.99,
-    'temperature' => 'NA',
+    'temperature' => $brawndo->order->temperatures['NA'],
     'person_name' => 'T. Shirt'
   ),
   array(
@@ -91,10 +91,10 @@ $items = array(
     'width' => 6.2,
     'depth' => 3.3,
     'unit' => 'in',
-    'container' => 'BOX',
+    'container' => $brawndo->order->containers['BOX'],
     'description' => 'Box of socks',
     'price' => 9.99,
-    'temperature' => 'NA',
+    'temperature' => $brawndo->order->temperatures['NA'],
     'person_name' => 'Jim'
   )
 );
