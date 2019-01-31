@@ -36,7 +36,8 @@ class Order
         'CARTON' => 800,
         'CASE' => 900,
         'COOLER' => 1000,
-        'CRATE' => 1100
+        'CRATE' => 1100,
+        'TOTE' => 1200
     );
 
     function __construct($utils)
