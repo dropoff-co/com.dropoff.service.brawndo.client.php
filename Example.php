@@ -18,6 +18,9 @@ var_dump($result);
 $result = $brawndo->order->properties();
 var_dump($result);
 
+$result = $brawndo->order->items();
+var_dump($result);
+
 //$result = $brawndo->estimate('800 Brazos St, Austin, TX 78701', '2517 Thornton Rd, Austin, TX 78704', date('P'), time());
 //$result = $brawndo->order->read('c969c2a46eb5bc7d007ddc0e10187116');
 //$result = $brawndo->order->readPage();
@@ -26,51 +29,85 @@ var_dump($result);
 //$result = $brawndo->order->tip->create('c969c2a46eb5bc7d007ddc0e10187116', 13.33);
 //$result = $brawndo->order->tip->delete('c969c2a46eb5bc7d007ddc0e10187116');
 //
-//$new_destination = array(
-//    'company_name' => 'Dropoff PHP Destination',
-//    'email' => 'awoss+phpd@dropoff.com',
-//    'phone_number' => '5555554444',
-//    'first_name' => 'Del',
-//    'last_name' => 'Fitzgitibit',
-//    'address_line_1' => '800 Brazos Street',
-//    'address_line_2' => '250',
-//    'city' => 'Austin',
-//    'state' => 'TX',
-//    'zip' => '78701',
-//    'lat' => 30.269967,
-//    'lng' => -97.740838
-//);
+$new_destination = array(
+   'company_name' => 'Dropoff PHP Destination',
+   'email' => 'awoss+phpd@dropoff.com',
+   'phone_number' => '5555554444',
+   'first_name' => 'Del',
+   'last_name' => 'Fitzgitibit',
+   'address_line_1' => '800 Brazos Street',
+   'phone' => '123456789',
+   'address_line_2' => '250',
+   'city' => 'Austin',
+   'state' => 'TX',
+   'zip' => '78701',
+   'lat' => 30.269967,
+   'lng' => -97.740838
+);
+
+$new_origin = array(
+   'company_name' => 'Dropoff PHP Destination',
+   'email' => 'awoss+gus@dropoff.com',
+   'phone_number' => '5124744877',
+   'first_name' => 'Napoleon',
+   'last_name' => 'Bonner',
+   'address_line_1' => '117 San Jacinto Blvd',
+   'phone' => '123456789',
+   'city' => 'Austin',
+   'state' => 'TX',
+   'zip' => '78701',
+   'lat' => 30.263706,
+   'lng' => -97.741703,
+   'remarks' => 'Be nice to napoleon'
+);
+$new_details = array(
+   'quantity' => 1,
+   'weight' => 5,
+   'eta' => '448.5',
+   'distance' => '0.64',
+   'price' => '13.99',
+   'ready_date' => time(),
+   'type' => 'two_hr'
+);
+
+$items = array(
+  array(
+    'sku' => '128UV9',
+    'quantity' => 3,
+    'weight' => 10,
+    'height' => 1.4,
+    'width' => 1.2,
+    'depth' => 2.3,
+    'unit' => 'ft',
+    'container' => $brawndo->order->containers['BOX'],
+    'description' => 'Box of t-shirts php',
+    'price' => 59.99,
+    'temperature' => $brawndo->order->temperatures['NA'],
+    'person_name' => 'T. Shirt'
+  ),
+  array(
+    'sku' => '128UV8',
+    'height' => 9.4,
+    'width' => 6.2,
+    'depth' => 3.3,
+    'unit' => 'in',
+    'container' => $brawndo->order->containers['BOX'],
+    'description' => 'Box of socks',
+    'price' => 9.99,
+    'temperature' => $brawndo->order->temperatures['NA'],
+    'person_name' => 'Jim'
+  )
+);
+
+$new_order = array(
+  'origin' => $new_origin,
+  'destination' => $new_destination,
+  'details' => $new_details,
+  'items' => $items
+);
 //
-//$new_origin = array(
-//    'company_name' => 'Dropoff PHP Destination',
-//    'email' => 'awoss+gus@dropoff.com',
-//    'phone_number' => '5124744877',
-//    'first_name' => 'Napoleon',
-//    'last_name' => 'Bonner',
-//    'address_line_1' => '117 San Jacinto Blvd',
-//    'city' => 'Austin',
-//    'state' => 'TX',
-//    'zip' => '78701',
-//    'lat' => 30.263706,
-//    'lng' => -97.741703,
-//    'remarks' => 'Be nice to napoleon'
-//);
-//$new_details = array(
-//    'quantity' => 1,
-//    'weight' => 5,
-//    'eta' => '448.5',
-//    'distance' => '0.64',
-//    'price' => '13.99',
-//    'ready_date' => time(),
-//    'type' => 'two_hr'
-//);
-//$new_order = array(
-//    'origin' => $new_origin,
-//    'destination' => $new_destination,
-//    'details' => $new_details
-//);
-//
-//$result = $brawndo->order->create($new_order);  //2aafc8569ede55dafdefc113626ee840
+// $result = $brawndo->order->create($new_order);  //2aafc8569ede55dafdefc113626ee840
+// var_dump($result);
 
 //$result = $brawndo->order->cancel('2aafc8569ede55dafdefc113626ee840');
 

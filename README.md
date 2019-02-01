@@ -17,6 +17,7 @@ This is the 3rd party dropoff php client for creating and viewing orders and add
     - [Getting Your Account Info](#client_info)
     - [Enterprise Managed Clients](#managed_clients)
     - [Order Properties](#order_properties)
+    - [Order Items](#order_items)
     - [Getting Pricing Estimates](#estimates)
     - [Placing an Order](#placing)
     - [Cancelling an Order](#cancel)
@@ -334,6 +335,85 @@ An example of a successful response will look like this:
 - **conflicts** - an array of other property ids that cannot be included in an order when this property is set.  In the above response you cannot set both "Leave at Door" and "Signature Required".
 - **requires** - an array of other property ids that must be included in an order when this property is set.  In the above response, when "Legal Filing" is set on an order, then "Signature Required" should be set as well.
 
+### Order Items <a id="order_items"></a>
+Depending on your client, you may have the ability to add items to an order.  In order to determine if you can add items and which properties are disabled, optional, or required you can make a request to the **items** function.  It will return the order items configuration for the specified client.
+
+```php
+$company_id = NULL; //optional
+$result = $brawndo->order->items($company_id);
+```
+
+If you include the **company_id** you will retrieve that company's properties only if your account credentials are managing that account.
+
+Note that the response contains some data that won't be necessary, the fields that will be needed to know how items are configured for your client are **order_item_enabled** and any field that contains **\_allow\_**.  These fields will be of 3 values, 0 - disabled, 1 - optional, or 2 - required.  If line items are optional and you include an item when creating an order, you must include all required **\_allow\_** fields.
+
+In the below output, line items are optional.  The following are required fields: sku, person_name, description, dimensions, and temperature.  Optional fields are: weight and quantity.  Disabled fields are container and price.
+
+An example of a successful response will look like this:
+```
+array(3) {
+  ["data"]=>
+  array(17) {
+    ["order_item_temp_refrigerated_max_value"]=>
+    int(42)
+    ["order_item_allow_sku"]=>
+    int(2)
+    ["company_id"]=>
+    string(32) "7df2b0bdb418157609c0d5766fb7fb12"
+    ["order_item_allow_weight"]=>
+    int(1)
+    ["order_item_enabled"]=>
+    int(1)
+    ["order_item_allow_person_name"]=>
+    int(2)
+    ["order_item_allow_quantity"]=>
+    int(1)
+    ["order_item_allow_description"]=>
+    int(2)
+    ["order_item_person_name_label"]=>
+    string(9) "Man/Woman"
+    ["order_item_allow_dimensions"]=>
+    int(2)
+    ["order_item_allow_container"]=>
+    int(0)
+    ["order_item_temp_frozen_max_value"]=>
+    int(2)
+    ["order_item_temp_unit"]=>
+    string(1) "F"
+    ["order_item_allow_price"]=>
+    int(0)
+    ["order_item_allow_temperature"]=>
+    int(2)
+    ["order_item_temp_frozen_min_value"]=>
+    int(0)
+    ["order_item_temp_refrigerated_min_value"]=>
+    int(40)
+  }
+  ["success"]=>
+  bool(true)
+  ["timestamp"]=>
+  string(20) "2018-12-19T21:01:41Z"
+}
+```
+
+- **order_item_temp_refrigerated_max_value** - The max temperature a refrigerated item can reach.
+- **order_item_allow_sku** - Signifies whether the sku is an optional, required, or disabled field for a line item
+- **company_id** - Company identifier for the order items configuration
+- **order_item_allow_weight** - Signifies whether item weight is an optional, required, or disabled field for a line item
+- **order_item_enabled** - Signifies line items are optional, required, or disabled.
+- **order_item_allow_person_name** - Signifies whether person_name is an optional, required, or disabled field for a line item
+- **order_item_allow_quantity** - Signifies whether quantity of an item is an optional, required, or disabled field for a line item
+- **order_item_allow_description** - Signifes whether a description is optional, required, or disabled for a line item
+- **order_item_person_name_label** - A label to be displayed when showing a person_name
+- **order_item_allow_dimensions** -  Signifies whether dimensions are optional, required, or disabled for a line item. **Note** - If diemensions are used for an item, you must include width, height, depth, and units
+- **order_item_allow_container** - Signifies whether a container type is optional, required, or disabled for a line item.
+- **order_item_temp_frozen_max_value** - The max temperature a frozen item can reach
+- **order_item_temp_unit** - The units that max/min temperatures represent. F or C
+- **order_item_allow_price** - Signifies whether a price is optional, required, or disabled for a line item
+- **order_item_allow_temperature** - Signifies whether a temperature type is optional, required, or disabled for a line item.  **Note** - Frozen, refrigerated, etc.
+- **order_item_temp_frozen_min_value** - The minimum temperature a frozen item can reach
+- **order_item_temp_refrigerated_min_value** - The minimum temperature a refrigerated item can reach
+
 ### Getting Pricing Estimates <a id="estimates"></a>
 
 Before you place an order you will first want to estimate the distance, eta, and cost for the delivery.  The client provides a **getEstimate** function for this operation.
@@ -478,7 +558,7 @@ The origin and destination contain information regarding the addresses in the or
 
 ---
 
-#### Order details data.
+#### Order details data. <a id="order_details_data"></a>
 
 The details contain attributes about the order
 
@@ -514,6 +594,62 @@ The properties section is an array of [property ids](#order_properties) to add t
 
 This is an optional piece of data.
 
+#### Order items data.
+
+The items section is an array of line items that meet the conditions specified when getting client's [order item preferences](#order_items).
+
+Some notes about items, here are all possible options that can be included but which are setup for your client must be determined when [getting your order items](#order_items):
+- **sku** - Must be a string
+- **quantity** - Must be a positive integer
+- **weight** - Must be a number greater than 0
+- **height** - Must be a number greater than 0
+- **depth** - Must be a number greater than 0
+- **width** - Must be a number greater than 0
+- **unit** - Must be in the array, ['in','ft','cm','mm','m']
+- **container** - Must be an integer. Can use the $brawndo->order->containers variable to reference possible containers
+- **description** - Must be a string
+- **price** - Must be a valid price format in dollars and cents, ex. 10, 10.5, 10.50, 10.0, 10.00
+- **temperature** - Must be an integer. Can use the $brawndo->order->temperatures variable to reference possilbe temps
+- **person_name** - Must be a string
+
+Passing fields that are disabled for the client will automatically fail creating the order and NOT passing required fields will automatically fail creating the order.
+
+If height, depth, width, or unit is used, then all 4 must be set.  These are all related to **order_item_allow_dimensions**.  That option must be either required or optional to use height, depth, width, or unit.
+
+Qunatity and weight passed in [details](#order_details_data) will be overwritten by the quantity and weight of your items if they are included.  If quantity or weight is optional and only included on some items then those without quantity or weight will increment by 1.  The below example would have a total order weight of 11 and quantity of 4.
+
+```php
+$items = array(
+  array(
+    'sku' => '128UV9',
+    'quantity' => 3,
+    'weight' => 10,
+    'height' => 1.4,
+    'width' => 1.2,
+    'depth' => 2.3,
+    'unit' => 'ft',
+    'container' => $brawndo->order->containers['BOX'],
+    'description' => 'Box of t-shirts',
+    'price' => 59.99,
+    'temperature' => $brawndo->order->temperatures['NA'],
+    'person_name' => 'T. Shirt'
+  ),
+  array(
+    'sku' => '128UV8',
+    'height' => 9.4,
+    'width' => 6.2,
+    'depth' => 3.3,
+    'unit' => 'in',
+    'container' => $brawndo->order->containers['BOX'],
+    'description' => 'Box of socks',
+    'price' => 9.99,
+    'temperature' => $brawndo->order->temperatures['NA'],
+    'person_name' => 'Jim'
+  )
+);
+```
+This can be optional, required, or not allowed depending on the client's order items response.
+
 ---
 Once this data is created, you can create the order.
 
@@ -521,7 +657,8 @@ Once this data is created, you can create the order.
 	    'origin' => $origin,
 	    'destination' => $destination,
 	    'details' => $details,
-	    'properties' => $properties
+	    'properties' => $properties,
+			'items' => $items
 	);
 
 	$result = $brawndo->order->create($new_order);
@@ -533,6 +670,7 @@ Note that if you want to create this order on behalf of a managed client as an e
 	    'destination' => $destination,
 	    'details' => $details,
 	    'properties' => $properties,
+			'items' => $items
 	    'company_id' => $company_id
 	);
 
