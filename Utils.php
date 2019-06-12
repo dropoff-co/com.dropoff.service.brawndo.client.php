@@ -21,7 +21,7 @@ class Utils
     public function createSignedRequest($path, $resource, $method, $query = NULL) {
         $request = new \HTTP_Request2($this->url.$path, $method);
 
-        if (sizeof($query) > 0) {
+        if (is_array($query) && sizeof($query) > 0) {
             $estimate_url = $request->getUrl();
             $estimate_url->setQueryVariables($query);
         }
