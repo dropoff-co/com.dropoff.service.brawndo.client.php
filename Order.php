@@ -51,11 +51,26 @@ class Order
         $request = NULL;
         if (!is_null($company_id)) {
             $query = array(
-                'company_id' => company_id
+                'company_id' => $company_id
             );
             $request = $this->utils->createSignedRequest('/order/properties', 'order', \HTTP_Request2::METHOD_GET, $query);
         } else {
             $request = $this->utils->createSignedRequest('/order/properties', 'order', \HTTP_Request2::METHOD_GET);
+        }
+        $request->setHeader('Content-type: application/json; charset=utf-8');
+        return $this->utils->sendRequest($request);
+    }
+
+    public function driverActionsMeta($company_id = NULL)
+    {
+        $request = NULL;
+        if (!is_null($company_id)) {
+            $query = array(
+                'company_id' => $company_id
+            );
+            $request = $this->utils->createSignedRequest('/order/driver_actions_meta', 'order', \HTTP_Request2::METHOD_GET, $query);
+        } else {
+            $request = $this->utils->createSignedRequest('/order/driver_actions_meta', 'order', \HTTP_Request2::METHOD_GET);
         }
         $request->setHeader('Content-type: application/json; charset=utf-8');
         return $this->utils->sendRequest($request);
@@ -75,12 +90,26 @@ class Order
         return $this->utils->sendRequest($request);
     }
 
+    public function pickupSignature($order_id, $company_id = NULL)
+    {
+        $request = NULL;
+        if (!is_null($company_id)) {
+            $query = array(
+                'company_id' => $company_id
+            );
+            $request = $this->utils->createSignedRequest('/order/pickup_signature/' . $order_id, 'order', \HTTP_Request2::METHOD_GET, $query);
+        } else {
+            $request = $this->utils->createSignedRequest('/order/pickup_signature/' . $order_id, 'order', \HTTP_Request2::METHOD_GET);
+        }
+        return $this->utils->sendRequest($request);
+    }
+
     public function create($order_data, $company_id = NULL)
     {
         $request = NULL;
         if (!is_null($company_id)) {
             $query = array(
-                'company_id' => company_id
+                'company_id' => $company_id
             );
             $request = $this->utils->createSignedRequest('/order', 'order', \HTTP_Request2::METHOD_POST, $query);
         } else {
