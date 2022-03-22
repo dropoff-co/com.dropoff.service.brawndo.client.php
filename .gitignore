@@ -1,3 +1,6 @@
 .idea/**
 LocalExample.php
 php.ini
+vendor
+composer.*
+shortest copy.csv
